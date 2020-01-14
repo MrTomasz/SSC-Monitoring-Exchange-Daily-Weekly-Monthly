@@ -9,10 +9,17 @@
 ## disk utilization and sends an email to the receipents included in the script
 ################################################################################ 
 
-#$ServerListFile = "C:\Scripts\Daily_Checks\Scheduled_Tasks-EMailed_Results\NITL_DEMS_Exchange_Servers_incl_2016_minus_ships_and_x.txt"
-
+#$ServerListFile = "C:\Scripts\Daily_Checks\Scheduled_Tasks-EMailed_Results\Exchange_Servers_incl_2016.txt"
 #$ServerList = Get-Content $ServerListFile -ErrorAction SilentlyContinue 
-#$ServerList = Get-ExchangeServer | where {($_.name -like "EIS-*-EP0*")}
+# Building search substring logic based on server names <change for your company/department>
+$ServerNamesSubstrings = @("EIS-*-EP0*","IMG-*-EP*","DCS-DCB-EP*")
+$Logic = ""
+For ($i=0;$i -lt $ServerNamesSubstrings.Count;$i++){
+    If ($i -ne $ServerNamesSubstrings.Count-1){
+        $Logic += "(`$_.Name -Like )"
+    }
+}
+
 $ServerList = Get-ExchangeServer | where {(($_.name -like "EIS-*-EP0*") -or ($_.name -like "IMG-*-EP*") -or ($_.name -like "DCS-DCB-EP*")) -and (($_.ServerRole -like "*HubTransport*") -or ($_.ServerRole -like "Mailbox*"))} | sort name | Select Name
 #$ServerList = Get-ExchangeServer | where {$_.name -like "EIS-LS2-EP06*"} | sort name | Select Name
 
@@ -47,15 +54,15 @@ $AVGProc = Get-WmiObject -computername $computername.Name win32_processor |
 Measure-Object -property LoadPercentage -Average | Select Average
 
 $OS = Get-WmiObject -Class win32_operatingsystem -computername $computername.Name |
-Select-Object @{Name = "MemoryUsage"; Expression = {“{0:N2}” -f ((($_.TotalVisibleMemorySize - $_.FreePhysicalMemory)*100)/ $_.TotalVisibleMemorySize) }}
+Select-Object @{Name = "MemoryUsage"; Expression = {ï¿½{0:N2}ï¿½ -f ((($_.TotalVisibleMemorySize - $_.FreePhysicalMemory)*100)/ $_.TotalVisibleMemorySize) }}
 
 $OSInfo = Get-WmiObject -Class Win32_OperatingSystem -ComputerName $computername.Name -ErrorAction CONTINUE
 
-$timespan = $OSInfo.ConvertToDateTime($OSInfo.LocalDateTime) – $OSInfo.ConvertToDateTime($OSInfo.LastBootUpTime)
+$timespan = $OSInfo.ConvertToDateTime($OSInfo.LocalDateTime) ï¿½ $OSInfo.ConvertToDateTime($OSInfo.LastBootUpTime)
             [int]$uptime = "{0:00}" -f $timespan.TotalHours
                 
 $vol = Get-WmiObject -Class win32_Volume -ComputerName $computername.Name -Filter "DriveLetter = 'C:'" |
-Select-object @{Name = "C_PercentFree"; Expression = {“{0:N2}” -f  (($_.FreeSpace / $_.Capacity)*100) } }
+Select-object @{Name = "C_PercentFree"; Expression = {ï¿½{0:N2}ï¿½ -f  (($_.FreeSpace / $_.Capacity)*100) } }
     
 $Result += [PSCustomObject] @{ 
         

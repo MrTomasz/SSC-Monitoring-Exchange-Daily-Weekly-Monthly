@@ -8,3 +8,9 @@ using Set-ScheduledTask
 
 # How to load all XML Windows Task definition into Windows
 
+```powershell
+
+$XMLFile = Get-ChildItem <Path to the folder where your XML task definition are stored - here .\WindowsTasksDefinition>
+
+Register-ScheduledTask -xml (Get-Content 'C:\PATH\TO\IMPORTED-FOLDER-PATH\TASK-INPORT-NAME.xml' | Out-String) -TaskName "TASK-IMPORT-NAME" -TaskPath "\TASK-PATH-TASKSCHEDULER\" -User COMPUTER-NAME\USER-NAME –Force
+```

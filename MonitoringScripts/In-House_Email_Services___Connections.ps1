@@ -63,9 +63,10 @@ Invoke-Expression C:\Scripts\Daily_Checks\Scheduled_Tasks-EMailed_Results\In-Hou
 
 $EMailAttachment = "C:\Scripts\Daily_Checks\Scheduled_Tasks-EMailed_Results\In-House_Email_Services___Connections_Report.htm"
 
-$SMTPServer1 = "EIS-LS2-EP06143"
-$SMTPServer2 = "EIS-LS2-EP06144"
-$SMTPServer3 = "EIS-DCB-EP06157"
+$SMTPServers = @("Server1","Server2","Server3")
+#$SMTPServer1 = "EIS-LS2-EP06143"
+#$SMTPServer2 = "EIS-LS2-EP06144"
+#$SMTPServer3 = "EIS-DCB-EP06157"
 
 $From = "Admin@forces.gc.ca"
 $Recipient = "DEMSCEMOPS@forces.gc.ca"
@@ -73,14 +74,10 @@ $Recipient = "DEMSCEMOPS@forces.gc.ca"
 
 $Subject = "In-House Email Services - Connections Report - $ReportDate"
 
-if (Test-Connection $SMTPServer1 -Quiet)
 
-{Send-MailMessage -from $From -to $Recipient -subject $Subject -SMTPServer $SMTPServer1 -Attachments $EMailAttachment}
-
-elseif (Test-Connection $SMTPServer2 -Quiet)
-
-{Send-MailMessage -from $From -to $Recipient -subject $Subject -SMTPServer $SMTPServer2 -Attachments $EMailAttachment}
-
+if (Test-Connection $SMTPServers[0] -Quiet)
+	{Send-MailMessage -from $From -to $Recipient -subject $Subject -SMTPServer $($SMTPServers[0]) -Attachments $EMailAttachment}
+elseif (Test-Connection $SMTPServers[1] -Quiet)
+	{Send-MailMessage -from $From -to $Recipient -subject $Subject -SMTPServer $($SMTPServers[1]) -Attachments $EMailAttachment}
 else 
- 
-{Send-MailMessage -from $From -to $Recipient -subject $Subject -SMTPServer $SMTPServer3 -Attachments $EMailAttachment}
+	{Send-MailMessage -from $From -to $Recipient -subject $Subject -SMTPServer $($SMTPServers[2]) -Attachments $EMailAttachment}

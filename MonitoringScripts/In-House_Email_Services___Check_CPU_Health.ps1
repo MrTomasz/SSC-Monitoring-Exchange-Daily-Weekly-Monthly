@@ -16,19 +16,19 @@ $ServerNamesSubstrings = @("EIS-*-EP0*","IMG-*-EP*","DCS-DCB-EP*")
 $Logic = ""
 For ($i=0;$i -lt $ServerNamesSubstrings.Count;$i++){
     If ($i -ne $ServerNamesSubstrings.Count-1){
-        $Logic += "(`$_.Name -Like $($ServerNamesSubstrings[$i])) -or "
+        $Logic += "(`$_.Name -Like `"$($ServerNamesSubstrings[$i])`") -or "
     } Else { # If it's the last -or condition, we don't put -or at the end of the string.
-        $Logic += "(`$_.Name -Like $($ServerNamesSubstrings[$i]))"
+        $Logic += "(`$_.Name -Like `"$($ServerNamesSubstrings[$i])`")"
     }
 }
 
-#BEGIN To test logic only
-$Logic
+$GetExchangeServerCmd = "Get-ExchangeServer | where {$Logic -and ((`$_.ServerRole -like `"*HubTransport*`") -or (`$_.ServerRole -like `"Mailbox*`"))} | sort name | Select Name"
+$GetExchangeServerCmd
+$ServerList = Invoke-Expression $GetExchangeServerCmd
+#$ServerList = Invoke-Expression $GetExchangeServerCmd
 exit
-#END To test logic only
+#$ServerList = Get-ExchangeServer | where {(($_.name -like "EIS-*-EP0*") -or ($_.name -like "IMG-*-EP*") -or ($_.name -like "DCS-DCB-EP*")) -and (($_.ServerRole -like "*HubTransport*") -or ($_.ServerRole -like "Mailbox*"))} | sort name | Select Name
 
-$ServerList = Get-ExchangeServer | where {(($_.name -like "EIS-*-EP0*") -or ($_.name -like "IMG-*-EP*") -or ($_.name -like "DCS-DCB-EP*")) -and (($_.ServerRole -like "*HubTransport*") -or ($_.ServerRole -like "Mailbox*"))} | sort name | Select Name
-#$ServerList = Get-ExchangeServer | where {$_.name -like "EIS-LS2-EP06*"} | sort name | Select Name
 
 $Result = @()
 $ReportDate = Get-Date

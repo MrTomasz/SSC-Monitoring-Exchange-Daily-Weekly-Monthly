@@ -1,5 +1,5 @@
 <#--------------
-Last update 2019 09 11 for PROD (kh)
+Last update 2019 09 11 for DND PROD (kh)
 --------------
 Customizations:
 
@@ -91,8 +91,7 @@ Function sendEmail
 } 
 
 
-function _GetDAG
-{
+function _GetDAG{
 	param($DAG)
 	@{Name			= $DAG.Name.ToUpper()
 	  MemberCount	= $DAG.Servers.Count
@@ -103,45 +102,35 @@ function _GetDAG
 
 
 
-function   _GetDB 
-{
-  param($Database)
+function  _GetDB {
+	param($Database)
+	$DB_Act_pref = $Database.ActivationPreference
+	$Mounted = $Database.Mounted
+	$DB_Act_pref = $Database.ActivationPreference
+	[array]$DBHolders =$null 
+	($Database.Servers) | % {$DBHolders  += $_.name}
 
-  $DB_Act_pref = $Database.ActivationPreference
-  $Mounted = $Database.Mounted
-  $DB_Act_pref = $Database.ActivationPreference
-  [array]$DBHolders =$null 
-		( $Database.Servers) |%{$DBHolders  += $_.name}
-
-
-
-
-
-     @{Name						= $Database.Name
-	  ActiveOwner				= $Database.Server.Name.ToUpper()	 
-	  Mounted                   = $Mounted
-	  DBHolders			        = $DBHolders
-	  DB_Act_pref               = $DB_Act_pref 	  
-	  IsRecovery                = $Database.Recovery
-	  }
-
+	@{Name			= $Database.Name
+	ActiveOwner		= $Database.Server.Name.ToUpper()	 
+	Mounted			= $Mounted
+	DBHolders		= $DBHolders
+	DB_Act_pref		= $DB_Act_pref 	  
+	IsRecovery		= $Database.Recovery
+	}
 }
 
-
-function _GetDAG_DB_Layout
-{
+function _GetDAG_DB_Layout{
 	param($Databases,$DAG)
+	$WarningColor                      = "#FF9900"
+	$ErrorColor                        = "#980000"
+	$BGColHeader                       = "#000099"
+	$BGColSubHeader                    = "#0000FF"
+	[Array]$Servers_In_DAG             = $DAG.Members
 
-	    $WarningColor                      = "#FF9900"
-		$ErrorColor                        ="#980000"
-		$BGColHeader                       ="#000099"
-		$BGColSubHeader                    ="#0000FF"
-		[Array]$Servers_In_DAG             = $DAG.Members
-		
-    $Output2 ="<table border=""0"" cellpadding=""3"" width=""50%"" style=""font-size:8pt;font-family:Arial,sans-serif"">
+	$Output2 ="<table border=""0"" cellpadding=""3"" width=""50%"" style=""font-size:8pt;font-family:Arial,sans-serif"">
 	<col width=""5%"">
 	<colgroup width=""25%"">"
-	$Servers_In_DAG | Sort-Object | %{$Output2+="<col width=""3%"">"}
+	$Servers_In_DAG | Sort-Object | % {$Output2+="<col width=""3%"">"}
 	$Output2 +="</colgroup>"
 	$ServerCount = $Servers_In_DAG.Count
 	
